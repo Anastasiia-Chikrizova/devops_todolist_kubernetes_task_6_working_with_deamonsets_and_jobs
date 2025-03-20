@@ -2,13 +2,13 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: hello-cronjob
-  namespace: todoapp
+  namespace: mateapp
 spec:
-  schedule: "*/1 * * * *"
-  concurrencyPolicy: Replace
+  schedule: "*/4 * * * *"
+  concurrencyPolicy: Allow
   startingDeadlineSeconds: 100
-  successfulJobsHistoryLimit: 3
-  failedJobsHistoryLimit: 1
+  successfulJobsHistoryLimit: 10
+  failedJobsHistoryLimit: 5
   jobTemplate:
     spec:
       template:
@@ -19,5 +19,12 @@ spec:
               command:
                 - /bin/sh
                 - -c
-                - date; echo Hello from the Kubernetes cluster
+                - curl -s http://todoapp-service.mateapp.svc.cluster.local/api/health || echo "Healthcheck failed"
+              resources:
+                  requests:
+                    cpu: "100m"
+                    memory: "128Mi"
+                  limits:
+                    cpu: "200m"
+                    memory: "256Mi"
           restartPolicy: OnFailure

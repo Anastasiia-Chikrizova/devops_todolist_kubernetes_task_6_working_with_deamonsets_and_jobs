@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: DaemonSet
 metadata:
   name: todoapp
-  namespace: todoapp
+  namespace: mateapp
   labels:
     app: todoapp
 spec:
@@ -17,6 +17,10 @@ spec:
       containers:
         - name: todoapp-service
           image: busyboxplus:curl
+          command:
+            - /bin/sh
+            - -c
+            - curl -s http://todoapp-service.mateapp.svc.cluster.local/api/health || echo "Healthcheck failed"
           resources:
             requests:
               cpu: "100m"
